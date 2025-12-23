@@ -37,6 +37,7 @@ export default function MainScreen({
 	const { logout } = useUserStore();
 	const createPost = useCreatePost();
 	const [searchQuery, setSearchQuery] = useState("");
+	const [dateFilter, setDateFilter] = useState<string>("all");
 	const {
 		register,
 		handleSubmit,
@@ -73,11 +74,24 @@ export default function MainScreen({
 
 	const filteredPosts = posts.filter((post) => {
 		const query = searchQuery.toLowerCase();
-		return (
+		const matchesSearch =
 			post.title.toLowerCase().includes(query) ||
 			post.content.toLowerCase().includes(query) ||
-			post.username.toLowerCase().includes(query)
-		);
+			post.username.toLowerCase().includes(query);
+
+		if (dateFilter === "all") return matchesSearch;
+
+		const postDate = new Date(post.created_datetime);
+		const now = new Date();
+		const diffMs = now.getTime() - postDate.getTime();
+		const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+		if (dateFilter === "today") return matchesSearch && diffDays === 0;
+		if (dateFilter === "yesterday") return matchesSearch && diffDays === 1;
+		if (dateFilter === "week") return matchesSearch && diffDays <= 7;
+		if (dateFilter === "older") return matchesSearch && diffDays > 7;
+
+		return matchesSearch;
 	});
 
 	const groupedPosts = groupPostsByTime(filteredPosts);
@@ -165,14 +179,25 @@ export default function MainScreen({
 						</div>
 					</form>
 
-					<div className="mb-6">
+					<div className="mb-6 flex flex-col sm:flex-row gap-3">
 						<input
 							type="text"
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
 							placeholder="Search posts by title, content, or username..."
-							className="w-full border border-[#777] rounded-lg px-[11px] py-2 text-sm placeholder:text-[#ccc]"
+							className="flex-1 border border-[#777] rounded-lg px-[11px] py-2 text-sm placeholder:text-[#ccc]"
 						/>
+						<select
+							value={dateFilter}
+							onChange={(e) => setDateFilter(e.target.value)}
+							className="border border-[#777] rounded-lg px-[11px] py-2 text-sm bg-white"
+						>
+							<option value="all">All Time</option>
+							<option value="today">Today</option>
+							<option value="yesterday">Yesterday</option>
+							<option value="week">This Week</option>
+							<option value="older">Older</option>
+						</select>
 					</div>
 
 					{isLoading ? (
