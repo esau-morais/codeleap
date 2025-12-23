@@ -21,6 +21,8 @@ interface MainScreenProps {
 	onLoadMore?: () => void;
 	hasMore?: boolean;
 	isLoadingMore?: boolean;
+	onlineCount?: number;
+	broadcast?: (message: unknown) => void;
 }
 
 export default function MainScreen({
@@ -33,9 +35,11 @@ export default function MainScreen({
 	onLoadMore,
 	hasMore,
 	isLoadingMore,
+	onlineCount = 0,
+	broadcast,
 }: MainScreenProps) {
 	const { logout } = useUserStore();
-	const createPost = useCreatePost();
+	const createPost = useCreatePost(broadcast);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [dateFilter, setDateFilter] = useState<string>("all");
 	const {
@@ -100,9 +104,16 @@ export default function MainScreen({
 		<div className="min-h-screen bg-[#ddd]">
 			<div className="max-w-[800px] mx-auto bg-white min-h-screen">
 				<div className="bg-[#7695ec] px-4 sm:px-9 py-7 flex justify-between items-center">
-					<h1 className="text-lg sm:text-[22px] font-bold text-white">
-						CodeLeap Network
-					</h1>
+					<div>
+						<h1 className="text-lg sm:text-[22px] font-bold text-white">
+							CodeLeap Network
+						</h1>
+						{onlineCount > 0 && (
+							<p className="text-xs text-white/80 mt-1">
+								{onlineCount} {onlineCount === 1 ? "user" : "users"} online
+							</p>
+						)}
+					</div>
 					<button
 						type="button"
 						onClick={logout}

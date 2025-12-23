@@ -6,6 +6,7 @@ import DeleteModal from "./components/DeleteModal";
 import EditModal from "./components/EditModal";
 import MainScreen from "./components/MainScreen";
 import Signup from "./components/Signup";
+import { usePartyKit } from "./hooks/usePartyKit";
 import { useDeletePost, usePosts, useUpdatePost } from "./hooks/usePosts";
 import { useUserStore } from "./store/useUserStore";
 
@@ -13,6 +14,8 @@ function App() {
 	const { username, setUsername } = useUserStore();
 	const [deletePostId, setDeletePostId] = useState<number | null>(null);
 	const [editPost, setEditPost] = useState<Post | null>(null);
+
+	const { broadcast, onlineCount } = usePartyKit();
 
 	const {
 		data,
@@ -23,8 +26,8 @@ function App() {
 		isFetchingNextPage,
 	} = usePosts();
 	const posts = data?.posts ?? [];
-	const deletePost = useDeletePost();
-	const updatePost = useUpdatePost();
+	const deletePost = useDeletePost(broadcast);
+	const updatePost = useUpdatePost(broadcast);
 
 	const confirmDelete = () => {
 		if (deletePostId !== null) {
@@ -64,6 +67,8 @@ function App() {
 				onLoadMore={fetchNextPage}
 				hasMore={hasNextPage}
 				isLoadingMore={isFetchingNextPage}
+				onlineCount={onlineCount}
+				broadcast={broadcast}
 			/>
 			{deletePostId !== null && (
 				<DeleteModal
