@@ -15,6 +15,7 @@ interface MainScreenProps {
 	onDeletePost: (id: number) => void;
 	onEditPost: (id: number) => void;
 	isLoading?: boolean;
+	isError?: boolean;
 	onLoadMore?: () => void;
 	hasMore?: boolean;
 	isLoadingMore?: boolean;
@@ -26,6 +27,7 @@ export default function MainScreen({
 	onDeletePost,
 	onEditPost,
 	isLoading,
+	isError,
 	onLoadMore,
 	hasMore,
 	isLoadingMore,
@@ -145,6 +147,13 @@ export default function MainScreen({
 							<PostSkeleton />
 							<PostSkeleton />
 						</>
+					) : isError ? (
+						<div className="bg-white border border-[#999] rounded-2xl p-6 text-center">
+							<p className="text-[#777] text-lg mb-2">Failed to load posts</p>
+							<p className="text-[#999] text-sm">
+								Please check your connection and try again
+							</p>
+						</div>
 					) : (
 						<>
 							{posts.map((post) => (

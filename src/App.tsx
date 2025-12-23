@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Toaster } from "sonner";
 import "./globas.css";
 import type { Post } from "./api/posts";
 import DeleteModal from "./components/DeleteModal";
@@ -13,8 +14,14 @@ function App() {
 	const [deletePostId, setDeletePostId] = useState<number | null>(null);
 	const [editPost, setEditPost] = useState<Post | null>(null);
 
-	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-		usePosts();
+	const {
+		data,
+		isLoading,
+		isError,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = usePosts();
 	const posts = data?.posts ?? [];
 	const deletePost = useDeletePost();
 	const updatePost = useUpdatePost();
@@ -46,12 +53,14 @@ function App() {
 
 	return (
 		<>
+			<Toaster position="top-center" richColors />
 			<MainScreen
 				username={username}
 				posts={posts}
 				onDeletePost={setDeletePostId}
 				onEditPost={handleEditPost}
 				isLoading={isLoading}
+				isError={isError}
 				onLoadMore={fetchNextPage}
 				hasMore={hasNextPage}
 				isLoadingMore={isFetchingNextPage}
