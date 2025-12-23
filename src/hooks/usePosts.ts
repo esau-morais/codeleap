@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	useInfiniteQuery,
+	useMutation,
+	useQueryClient,
+} from "@tanstack/react-query";
 import {
 	type CreatePostData,
 	postsApi,
@@ -6,10 +10,19 @@ import {
 } from "../api/posts";
 
 export const usePosts = () => {
-	return useQuery({
+	return useInfiniteQuery({
 		queryKey: ["posts"],
-		queryFn: postsApi.getAll,
-		select: (data) => data.results,
+		queryFn: ({ pageParam }) => postsApi.getAll(pageParam, 10),
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+			if (!lastPage.next) return undefined;
+			return lastPageParam + 10;
+		},
+		select: (data) => ({
+			pages: data.pages,
+			pageParams: data.pageParams,
+			posts: data.pages.flatMap((page) => page.results),
+		}),
 	});
 };
 

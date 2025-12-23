@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { Post } from "../api/posts";
+import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
 import { useCreatePost } from "../hooks/usePosts";
 import { type PostInput, postSchema } from "../lib/schemas";
 import { useUserStore } from "../store/useUserStore";
@@ -13,6 +14,9 @@ interface MainScreenProps {
 	onDeletePost: (id: number) => void;
 	onEditPost: (id: number) => void;
 	isLoading?: boolean;
+	onLoadMore?: () => void;
+	hasMore?: boolean;
+	isLoadingMore?: boolean;
 }
 
 export default function MainScreen({
@@ -21,6 +25,9 @@ export default function MainScreen({
 	onDeletePost,
 	onEditPost,
 	isLoading,
+	onLoadMore,
+	hasMore,
+	isLoadingMore,
 }: MainScreenProps) {
 	const { logout } = useUserStore();
 	const createPost = useCreatePost();
@@ -33,6 +40,15 @@ export default function MainScreen({
 		resolver: zodResolver(postSchema),
 		mode: "onChange",
 	});
+
+	const loadMoreRef = useIntersectionObserver(
+		() => {
+			if (hasMore && !isLoadingMore && onLoadMore) {
+				onLoadMore();
+			}
+		},
+		{ threshold: 0.1 },
+	);
 
 	const onSubmit = (data: PostInput) => {
 		createPost.mutate(
@@ -118,15 +134,19 @@ export default function MainScreen({
 							<PostSkeleton />
 						</>
 					) : (
-						posts.map((post) => (
-							<PostCard
-								key={post.id}
-								{...post}
-								currentUsername={username}
-								onDelete={onDeletePost}
-								onEdit={onEditPost}
-							/>
-						))
+						<>
+							{posts.map((post) => (
+								<PostCard
+									key={post.id}
+									{...post}
+									currentUsername={username}
+									onDelete={onDeletePost}
+									onEdit={onEditPost}
+								/>
+							))}
+							{hasMore && <div ref={loadMoreRef} className="h-10" />}
+							{isLoadingMore && <PostSkeleton />}
+						</>
 					)}
 				</div>
 			</div>

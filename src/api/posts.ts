@@ -19,9 +19,16 @@ export interface UpdatePostData {
 	content: string;
 }
 
+export interface PostsResponse {
+	count: number;
+	next: string | null;
+	previous: string | null;
+	results: Post[];
+}
+
 export const postsApi = {
-	getAll: async (): Promise<{ results: Post[] }> => {
-		const res = await fetch(BASE_URL);
+	getAll: async (offset = 0, limit = 10): Promise<PostsResponse> => {
+		const res = await fetch(`${BASE_URL}?limit=${limit}&offset=${offset}`);
 		if (!res.ok) throw new Error("Failed to fetch posts");
 		return res.json();
 	},

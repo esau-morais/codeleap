@@ -13,7 +13,9 @@ function App() {
 	const [deletePostId, setDeletePostId] = useState<number | null>(null);
 	const [editPost, setEditPost] = useState<Post | null>(null);
 
-	const { data: posts = [], isLoading } = usePosts();
+	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+		usePosts();
+	const posts = data?.posts ?? [];
 	const deletePost = useDeletePost();
 	const updatePost = useUpdatePost();
 
@@ -50,6 +52,9 @@ function App() {
 				onDeletePost={setDeletePostId}
 				onEditPost={handleEditPost}
 				isLoading={isLoading}
+				onLoadMore={fetchNextPage}
+				hasMore={hasNextPage}
+				isLoadingMore={isFetchingNextPage}
 			/>
 			{deletePostId !== null && (
 				<DeleteModal
