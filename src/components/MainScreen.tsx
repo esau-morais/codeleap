@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { Post } from "../api/posts";
 import { useDraftAutosave } from "../hooks/useDraftAutosave";
@@ -35,6 +36,7 @@ export default function MainScreen({
 }: MainScreenProps) {
 	const { logout } = useUserStore();
 	const createPost = useCreatePost();
+	const [searchQuery, setSearchQuery] = useState("");
 	const {
 		register,
 		handleSubmit,
@@ -69,7 +71,16 @@ export default function MainScreen({
 		);
 	};
 
-	const groupedPosts = groupPostsByTime(posts);
+	const filteredPosts = posts.filter((post) => {
+		const query = searchQuery.toLowerCase();
+		return (
+			post.title.toLowerCase().includes(query) ||
+			post.content.toLowerCase().includes(query) ||
+			post.username.toLowerCase().includes(query)
+		);
+	});
+
+	const groupedPosts = groupPostsByTime(filteredPosts);
 
 	return (
 		<div className="min-h-screen bg-[#ddd]">
@@ -153,6 +164,16 @@ export default function MainScreen({
 							</button>
 						</div>
 					</form>
+
+					<div className="mb-6">
+						<input
+							type="text"
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							placeholder="Search posts by title, content, or username..."
+							className="w-full border border-[#777] rounded-lg px-[11px] py-2 text-sm placeholder:text-[#ccc]"
+						/>
+					</div>
 
 					{isLoading ? (
 						<>
