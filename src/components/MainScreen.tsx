@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { Post } from "../api/posts";
+import { useDraftAutosave } from "../hooks/useDraftAutosave";
 import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
 import { useCreatePost } from "../hooks/usePosts";
 import { type PostInput, postSchema } from "../lib/schemas";
@@ -35,11 +36,14 @@ export default function MainScreen({
 		register,
 		handleSubmit,
 		reset,
+		watch,
 		formState: { isValid },
 	} = useForm<PostInput>({
 		resolver: zodResolver(postSchema),
 		mode: "onChange",
 	});
+
+	const clearDraft = useDraftAutosave(watch, reset);
 
 	const loadMoreRef = useIntersectionObserver(
 		() => {
@@ -54,7 +58,10 @@ export default function MainScreen({
 		createPost.mutate(
 			{ username, ...data },
 			{
-				onSuccess: () => reset(),
+				onSuccess: () => {
+					reset();
+					clearDraft();
+				},
 			},
 		);
 	};
@@ -82,9 +89,14 @@ export default function MainScreen({
 						onSubmit={handleSubmit(onSubmit)}
 						className="bg-white border border-[#999] rounded-2xl p-4 sm:p-6 mb-6"
 					>
-						<h2 className="text-lg sm:text-[22px] font-bold text-black mb-6">
-							What's on your mind?
-						</h2>
+						<div className="flex justify-between items-center mb-6">
+							<h2 className="text-lg sm:text-[22px] font-bold text-black">
+								What's on your mind?
+							</h2>
+							{(watch("title") || watch("content")) && (
+								<span className="text-xs text-[#777] italic">Draft saved</span>
+							)}
+						</div>
 
 						<div className="mb-4">
 							<label
