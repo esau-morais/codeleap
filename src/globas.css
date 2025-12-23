@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+* {
+	font-family: "Roboto", sans-serif;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes modalFadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes modalSlideIn {
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes skeleton {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+.animate-fadeIn {
+	animation: fadeIn 0.3s ease-out;
+}
+
+.animate-modalFadeIn {
+	animation: modalFadeIn 0.2s ease-out;
+}
+
+.animate-modalSlideIn {
+	animation: modalSlideIn 0.2s ease-out;
+}
+
+.animate-skeleton {
+	animation: skeleton 1.5s ease-in-out infinite;
+}
