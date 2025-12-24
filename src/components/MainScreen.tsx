@@ -5,7 +5,7 @@ import { useDraftAutosave } from "../hooks/useDraftAutosave";
 import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
 import { useCreatePost } from "../hooks/usePosts";
 import { type PostInput, postSchema } from "../lib/schemas";
-import { TIME_GROUPS, groupPostsByTime } from "../lib/timeGrouping";
+import { groupPostsByTime, TIME_GROUPS } from "../lib/timeGrouping";
 import { useUserStore } from "../store/useUserStore";
 import PostCard from "./PostCard";
 import PostSkeleton from "./PostSkeleton";
@@ -104,12 +104,17 @@ export default function MainScreen({
 						</div>
 
 						<div className="mb-4">
-							<label
-								htmlFor="post-title"
-								className="block text-base text-black mb-2"
-							>
-								Title
-							</label>
+							<div className="flex justify-between items-center mb-2">
+								<label
+									htmlFor="post-title"
+									className="block text-base text-black"
+								>
+									Title
+								</label>
+								<span className="text-xs text-[#777]">
+									{watch("title")?.length || 0} characters
+								</span>
+							</div>
 							<input
 								id="post-title"
 								{...register("title")}
@@ -119,12 +124,17 @@ export default function MainScreen({
 						</div>
 
 						<div className="mb-4">
-							<label
-								htmlFor="post-content"
-								className="block text-base text-black mb-2"
-							>
-								Content
-							</label>
+							<div className="flex justify-between items-center mb-2">
+								<label
+									htmlFor="post-content"
+									className="block text-base text-black"
+								>
+									Content
+								</label>
+								<span className="text-xs text-[#777]">
+									{watch("content")?.length || 0} characters
+								</span>
+							</div>
 							<textarea
 								id="post-content"
 								{...register("content")}

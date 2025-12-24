@@ -21,6 +21,7 @@ export default function EditModal({
 	const {
 		register,
 		handleSubmit,
+		watch,
 		formState: { isValid },
 	} = useForm<PostInput>({
 		resolver: zodResolver(postSchema),
@@ -43,12 +44,14 @@ export default function EditModal({
 				</h2>
 
 				<div className="mb-4">
-					<label
-						htmlFor="edit-title"
-						className="block text-base text-black mb-2"
-					>
-						Title
-					</label>
+					<div className="flex justify-between items-center mb-2">
+						<label htmlFor="edit-title" className="block text-base text-black">
+							Title
+						</label>
+						<span className="text-xs text-[#777]">
+							{watch("title")?.length || 0} characters
+						</span>
+					</div>
 					<input
 						id="edit-title"
 						{...register("title")}
@@ -58,12 +61,17 @@ export default function EditModal({
 				</div>
 
 				<div className="mb-6">
-					<label
-						htmlFor="edit-content"
-						className="block text-base text-black mb-2"
-					>
-						Content
-					</label>
+					<div className="flex justify-between items-center mb-2">
+						<label
+							htmlFor="edit-content"
+							className="block text-base text-black"
+						>
+							Content
+						</label>
+						<span className="text-xs text-[#777]">
+							{watch("content")?.length || 0} characters
+						</span>
+					</div>
 					<textarea
 						id="edit-content"
 						{...register("content")}
