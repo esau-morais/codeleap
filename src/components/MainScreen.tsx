@@ -5,6 +5,7 @@ import { useDraftAutosave } from "../hooks/useDraftAutosave";
 import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
 import { useCreatePost } from "../hooks/usePosts";
 import { type PostInput, postSchema } from "../lib/schemas";
+import { TIME_GROUPS, groupPostsByTime } from "../lib/timeGrouping";
 import { useUserStore } from "../store/useUserStore";
 import PostCard from "./PostCard";
 import PostSkeleton from "./PostSkeleton";
@@ -67,6 +68,8 @@ export default function MainScreen({
 			},
 		);
 	};
+
+	const groupedPosts = groupPostsByTime(posts);
 
 	return (
 		<div className="min-h-screen bg-[#ddd]">
@@ -156,15 +159,25 @@ export default function MainScreen({
 						</div>
 					) : (
 						<>
-							{posts.map((post) => (
-								<PostCard
-									key={post.id}
-									{...post}
-									currentUsername={username}
-									onDelete={onDeletePost}
-									onEdit={onEditPost}
-								/>
-							))}
+							{TIME_GROUPS.map(
+								(group) =>
+									groupedPosts[group].length > 0 && (
+										<div key={group}>
+											<h3 className="text-lg font-bold text-black mb-4 mt-6 first:mt-0">
+												{group}
+											</h3>
+											{groupedPosts[group].map((post) => (
+												<PostCard
+													key={post.id}
+													{...post}
+													currentUsername={username}
+													onDelete={onDeletePost}
+													onEdit={onEditPost}
+												/>
+											))}
+										</div>
+									),
+							)}
 							{hasMore && <div ref={loadMoreRef} className="h-10" />}
 							{isLoadingMore && <PostSkeleton />}
 						</>
